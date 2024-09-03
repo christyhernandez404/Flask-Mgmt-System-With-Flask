@@ -37,6 +37,12 @@ def blueprint_config(app):
 def rate_limit_config(app):
     limiter.init_app(app)
     limiter.limit("100/hour")(customer_blueprint)
+    limiter.limit("100/hour")(order_blueprint)
+    limiter.limit("100/hour")(product_blueprint)
+    limiter.limit("100/hour")(order_product_blueprint)
+
+
+
 
 
 
