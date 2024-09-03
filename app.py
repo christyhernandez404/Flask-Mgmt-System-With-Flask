@@ -8,6 +8,7 @@ from cache import cache
 from models.customer import Customer
 from models.order import Order
 from models.product import Product
+from models.order_product import OrderProducts
 
 #blueprints
 from routes.customerBP import customer_blueprint
