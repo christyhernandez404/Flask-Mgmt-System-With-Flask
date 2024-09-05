@@ -4,7 +4,7 @@ from services import orderProductService
 from cache import cache
 
 
-@cache.cached(timeout=120)
+@cache.cached(timeout=30)
 def find_all():
     all_order_products = orderProductService.find_all()
 

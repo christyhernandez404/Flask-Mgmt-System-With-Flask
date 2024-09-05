@@ -17,8 +17,19 @@ def save():
     return product_schema.jsonify(product), 201 
 
 
-@cache.cached(timeout=120)
+# @cache.cached(timeout=30)
 def find_all():
-    all_products = productService.find_all()
+    try:
+        page = request.args.get("page")
+        per_page = request.args.get("per_page")
+        page = 1 if not page else page
+        per_page = 10 if not per_page else per_page
+        all_products = productService.find_all(page, per_page)
+
+    except ValueError:
+        return jsonify({"error": "Invalid page or per_page parameter"}), 400
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
     return products_schema.jsonify(all_products), 200

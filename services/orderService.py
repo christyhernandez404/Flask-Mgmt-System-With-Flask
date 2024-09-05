@@ -19,8 +19,8 @@ def save(order_data):
     db.session.commit()
     return new_order
 
-def find_all():
+def find_all(page=1, per_page=10):
     query = select(Order)
-    all_orders = db.session.execute(query).scalars().all()
+    all_orders = db.paginate(query, page=int(page), per_page=int(per_page))
 
     return all_orders
