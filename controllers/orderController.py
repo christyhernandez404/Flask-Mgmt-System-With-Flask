@@ -3,8 +3,9 @@ from models.schemas.orderSchema import order_schema, orders_schema
 from services import orderService
 from marshmallow import ValidationError
 from cache import cache
+from utils.util import token_required
 
-
+@token_required
 def save():
 
     try:

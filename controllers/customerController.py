@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from models.schemas.customerSchema import customer_schema, customers_schema
+from models.schemas.customerSchema import customer_schema, customers_schema, customer_login
 from services import customerService
 from marshmallow import ValidationError
 from cache import cache
@@ -20,8 +20,8 @@ def save(): #name the controller the same as the service it recruites
 # @cache.cached(timeout=30)
 def find_all():
     try:
-        page =  int(request.args.get("page"))
-        per_page = int(request.args.get("per_page"))
+        page =  request.args.get("page")
+        per_page = request.args.get("per_page")
         page = 1 if not page else page
         per_page = 10 if not per_page else per_page
         all_customers = customerService.find_all(page, per_page)
@@ -31,6 +31,26 @@ def find_all():
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-
+    
     return customers_schema.jsonify(all_customers), 200
+    
+def login():
+    try:
+        credentials = customer_login.load(request.json)
+    except ValidationError as e:
+        return jsonify(e.messages), 400
+    
+    token = customerService.login(credentials)
+
+    if token:
+        response = {
+            "status": "success",
+            "message": "successfully logged in",
+            "token": token
+        }
+
+        return jsonify(response), 200
+
+    else:
+        return jsonify({"status":"error","mesage":"invalid username or password"}), 404
+

@@ -1,22 +1,23 @@
 from database import db 
-from models.order import Order, Order
-from models.order_product import OrderProducts
+from models.order import Order
+from models.product import Product
+from models.order_product import order_products
 from sqlalchemy import select 
+from datetime import date
 
 
 def save(order_data):
 
-    new_order = Order(order_date=order_data['order_date'], customer_id=order_data['customer_id'])
+    new_order = Order(customer_id=order_data['customer_id'], order_date=date.today()) 
+
+    for item_id in order_data['product_ids']:
+        query = select(Product).where(Product.id==item_id) 
+        item = db.session.execute(query).scalar()
+        new_order.products.append(item) 
     db.session.add(new_order)
     db.session.commit()
-
-    product_ids = order_data.get('product_ids')
-
-    for product_id in product_ids:
-        order_product = OrderProducts(order_id=new_order.id, product_id=product_id)
-        db.session.add(order_product)
-    
-    db.session.commit()
+  
+    db.session.refresh(new_order)
     return new_order
 
 def find_all(page=1, per_page=10):
