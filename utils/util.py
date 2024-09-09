@@ -34,6 +34,25 @@ def token_required(f):
             return jsonify({"message": "Authentication token missing"}), 401
     return wrapper
 
+def user_validation(f): #Validates and returns the user_id associated with the token
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        token = None
+        if 'Authorization' in request.headers:
+            try:
+                token = request.headers['Authorization'].split()[1]
+                payload = jwt.decode(token, SECRET_KEY, algorithms='HS256')
+            except jwt.ExpiredSignatureError:
+                return jsonify({'message': 'Token has expired'}), 401 #unauthenticated
+            except jwt.InvalidTokenError:
+                return jsonify({'message': 'Invalid Token'}), 401
+            return f(token_id=payload['sub'], *args, **kwargs)
+        else:
+            return jsonify({'message': 'Authentication token missing'}), 401
+        
+    return wrapper
+
+
 #=============Role Based Access===============#
 
 def encode_role_token(user_id, role_id):

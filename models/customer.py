@@ -1,6 +1,8 @@
 from database import db, Base
 from sqlalchemy.orm import Mapped, mapped_column
 from typing import List
+from models.cart import customer_cart,cart
+
 
 class Customer(Base):
     __tablename__ = 'customers'   
@@ -15,7 +17,8 @@ class Customer(Base):
 
 
     #relationship definitions
-    #linking orders to customers
-    orders: Mapped[List['Order']] = db.relationship(back_populates='customer')
+    cart: Mapped[List['Product']] = db.relationship("Product", secondary="customer_cart", back_populates="customers")
+
+    orders: Mapped[List['Order']] = db.relationship(back_populates='customer') 
     
 

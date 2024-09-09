@@ -10,11 +10,15 @@ from models.order import Order
 from models.product import Product
 from models.order_product import order_products
 
+
+
+
 #blueprints
 from routes.customerBP import customer_blueprint
 from routes.orderBP import order_blueprint
 from routes.productBP import product_blueprint
 from routes.orderProductBP import order_product_blueprint
+from routes.cartBP import cart_blueprint
 
 def create_app(config_name):
     app = Flask(__name__)
@@ -33,6 +37,8 @@ def blueprint_config(app):
     app.register_blueprint(order_blueprint, url_prefix="/orders")
     app.register_blueprint(product_blueprint, url_prefix="/products")
     app.register_blueprint(order_product_blueprint, url_prefix="/order_products")
+    app.register_blueprint(cart_blueprint, url_prefix="/cart")
+
 
 
 def rate_limit_config(app):

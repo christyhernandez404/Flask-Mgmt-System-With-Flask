@@ -18,7 +18,7 @@ class Order(Base):
     #backpopulates in both customer and order establishes a two-way relaiontship
     customer: Mapped['Customer'] = db.relationship(back_populates="orders") 
     #link each order to a product
-    products: Mapped[List['Product']] = db.relationship(secondary=order_products)
+    products: Mapped[List['Product']] = db.relationship(secondary=order_products,back_populates='orders',overlaps="orders")
    
     
 

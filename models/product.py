@@ -12,7 +12,9 @@ class Product(Base):
 
     #relationship definitions
     #linking orders to product
-    orders: Mapped[List['Order']] = db.relationship(secondary=order_products)
+    orders: Mapped[List['Order']] = db.relationship(secondary=order_products,back_populates='products',overlaps="products")
+
+    customers: Mapped[List["Customer"]]= db.relationship(secondary="customer_cart", back_populates='cart')
   
     
 

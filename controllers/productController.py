@@ -9,6 +9,8 @@ def save():
 
     try:
         product_data = product_schema.load(request.json)
+        #request json : captures the incoming JSON data sent by the client in a POST request
+        # schema deserializes the incoming json and validates it according to the product schema
     
     except ValidationError as e:
         return jsonify(e.messages), 400 

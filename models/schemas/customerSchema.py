@@ -9,10 +9,13 @@ class CustomerSchema(ma.Schema): #inherting our instance of Marshmallow
     username = fields.String(required=True)
     password = fields.String(required=True)
     admin = fields.Integer(required=True)
+    products = fields.Nested("ProductSchema", many= True)
+    cart = fields.Nested("ProductSchema", many=True)
+
 
 
     class Meta:
-        fields = ("id", "name","email", "phone","username","password","admin")
+        fields = ("id", "name","email", "phone","username","password","admin","products_ids","products")
 
 customer_schema = CustomerSchema()
 customers_schema = CustomerSchema(many=True, exclude=["password"]) 
