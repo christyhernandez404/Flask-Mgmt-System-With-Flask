@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_swagger_ui import get_swaggerui_blueprint
 from database import db
 from models.schemas import ma
 from limiter import limiter
@@ -20,6 +21,11 @@ from routes.productBP import product_blueprint
 from routes.orderProductBP import order_product_blueprint
 from routes.cartBP import cart_blueprint
 
+SWAGGER_URL = '/api/docs'
+API_URL = '/static/swagger.yaml'  
+
+swagger_blueprint = get_swaggerui_blueprint(SWAGGER_URL, API_URL, config={'app_name': "Ecommerce API"})
+
 def create_app(config_name):
     app = Flask(__name__)
 
@@ -38,6 +44,8 @@ def blueprint_config(app):
     app.register_blueprint(product_blueprint, url_prefix="/products")
     app.register_blueprint(order_product_blueprint, url_prefix="/order_products")
     app.register_blueprint(cart_blueprint, url_prefix="/cart")
+    app.register_blueprint(swagger_blueprint, url_prefix="/api/docs")
+
 
 
 
@@ -47,6 +55,8 @@ def rate_limit_config(app):
     limiter.limit("100/hour")(order_blueprint)
     limiter.limit("100/hour")(product_blueprint)
     limiter.limit("100/hour")(order_product_blueprint)
+    limiter.limit("10 per second")(swagger_blueprint)
+
 
 
 

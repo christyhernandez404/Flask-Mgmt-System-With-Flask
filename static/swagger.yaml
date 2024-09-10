@@ -3,7 +3,7 @@ info:
   title: "Ecommerce API"
   description: "Brief description"
   version: "1.0.0"
-host: "127.0.0.1:5000" #working on local host
+host: "127.0.0.1:5000"
 schemes:
   - "http"
 consumes:
@@ -16,19 +16,19 @@ securityDefinitions:
     name: Authorization
     in: header
 
-
-#Routes
-paths: #actual endpoints we are using
-  /customers/login: #the url endpoint
+paths:
+  /customers/login:
     post: 
       tags:
-        - Customer #creates a category for this route that can be reused on like routes
+        - Customer
       summary: "Login endpoint (generates a token)"
       description: "Endpoint for user authentication and token generation"
+      security:
+        - bearerAuth:
       parameters: 
         - in: "body"
           name: "body"
-          description: "credentials for login(email and password)"
+          description: "Credentials for login (email and password)"
           required: true
           schema:
             $ref: "#/definitions/LoginPayload"
@@ -36,24 +36,23 @@ paths: #actual endpoints we are using
         200:
           description: "Login Successful"
           schema:
-            $ref: "#definitions/LoginResponse"
+            $ref: "#/definitions/LoginResponse"
           examples:
             application/json:
               token: "adafiphwefanip3dkfapdif"
-              message: "succesfully logged in"
+              message: "Successfully logged in"
               status: "success"
 
   /customers:
     get:
       tags:
         - Customer
-      summary: "retrieve a list of customer objects"
-      description: "endpoing to retrieve all customers, requires token authentication"
+      summary: "Retrieve a list of customer objects"
+      description: "Endpoint to retrieve all customers, requires token authentication"
       security:
-        - bearerAuth: 
       responses:
         200:
-          description: "Successfully retreived all customers"
+          description: "Successfully retrieved all customers"
           schema:
             $ref: "#/definitions/GetCustomers"
           examples:
@@ -63,17 +62,42 @@ paths: #actual endpoints we are using
               phone: "98754431"
               username: "ChristyH"
               admin: 0
+
+    post:
+      tags:
+        - Customer
+      summary: "Create a customer object"
+      description: "Endpoint to create a customer in the e-commerce system"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Customer object"
+          required: true
+          schema:
+            $ref: "#/definitions/CreateCustomer"
+      responses:
+        200:
+          description: "Customer created successfully"
+          schema:
+            $ref: "#/definitions/CreateCustomer"
+          examples:
+            application/json:
+              name: "Christy"
+              email: "christy@gmail.com"
+              phone: "98754431"
+              username: "ChristyH"
+              admin: 0
+
   /product:
     get:
       tags:
         - Product
-      summary: "retrieve a list of product objects"
-      description: "endpoing to retrieve all products"
+      summary: "Retrieve a list of product objects"
+      description: "Endpoint to retrieve all products"
       security:
-        - bearerAuth: 
       responses:
         200:
-          description: "Successfully retreived all products"
+          description: "Successfully retrieved all products"
           schema:
             $ref: "#/definitions/GetProducts"
           examples:
@@ -81,73 +105,170 @@ paths: #actual endpoints we are using
               id: 1
               price: 89.99
               product_name: "Cat Tower"
-  /product:
+
     post:
       tags:
         - Product
-      summary: "create a product object in our ecommerce system"
-      description: "endpoint to create a product object"
+      summary: "Create a product object in our e-commerce system"
+      description: "Endpoint to create a product object"
       security:
-        - bearerAuth: 
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Product object"
+          required: true
+          schema:
+            $ref: "#/definitions/CreateProduct"
       responses:
         200:
-          description: "The products created will be shown"
+          description: "Product created successfully"
           schema:
-            $ref: "#/definitions/CreateProducts"
+            $ref: "#/definitions/CreateProduct"
           examples:
             application/json:
               id: 1
               price: 89.99
               product_name: "Cat Tower"
+
   /orders:
     get:
       tags:
         - Order
       summary: "Retrieve a list of all orders"
-      description: "endpoint to view all orders"
+      description: "Endpoint to view all orders"
       security:
-        - bearerAuth:
       responses:
         200:
           description: "A list of orders with products"
           schema:
-                $ref: '#/components/schemas/OrdersResponse'
+            $ref: '#/definitions/GetOrder'
           examples:
             application/json:
-              customer_id: 2,
-              id: 5,
-              order_date: "2024-09-02",
-              products: [
-            {
-                id: 1,
-                price: 89.99,
-                product_name: "Cat Tower"
-            },
-            {
-                id: 2,
-                price: 75.0,
-                product_name: "Tall Lamp - 48in"
-            }
-        ]
+              customer_id: 2
+              id: 5
+              order_date: "2024-09-02"
+              products:
+                - id: 1
+                  price: 89.99
+                  product_name: "Cat Tower"
+                - id: 2
+                  price: 75.0
+                  product_name: "Tall Lamp - 48in"
 
+  /cart:
+    post:
+      tags:
+        - Cart
+      summary: "Add a product to the customer's cart"
+      description: "Endpoint to add a product to the customer's cart"
+      security:
+        - bearerAuth:
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Cart object"
+          required: true
+          schema:
+            $ref: "#/definitions/AddToCart"
+      responses:
+        200:
+          description: "Products added to cart"
+          schema:
+            $ref: "#/definitions/AddToCart"
+          examples:
+            application/json:
+              message: "Products added to cart"
 
-              
+    delete:
+      tags:
+        - Cart
+      summary: "Remove a product(s) from the customer's cart"
+      description: "Endpoint to remove product(s) from the customer's cart"
+      security:
+        - bearerAuth: 
+      responses:
+        200:
+          description: "Product removed from cart"
+          schema:
+            $ref: "#/definitions/RemoveItemFromCart"
+          examples:
+            application/json:
+              message: "Product removed from cart"
 
-#Payloads and Responses
-definitions: 
-#Login Definitions
+    get:
+      tags:
+        - Cart
+      summary: "View all products in the customer's cart"
+      description: "Endpoint to view all products in the customer's cart"
+      security:
+        - bearerAuth:
+      responses:
+        200:
+          description: "Cart contents retrieved"
+          schema:
+            $ref: "#/definitions/ViewCart"
+          examples:
+            application/json:
+              customer_id: 2
+              products:
+                - id: 1
+                  price: 89.99
+                  product_name: "Cat Tower"
+                - id: 2
+                  price: 75.0
+                  product_name: "Tall Lamp - 48in"
+
+  /cart/empty-cart:
+    delete:
+      tags:
+        - Cart
+      summary: "Remove all products from the customer's cart"
+      description: "Endpoint to empty the customer's cart"
+      security:
+        - bearerAuth:
+      responses:
+        200:
+          description: "Cart has been emptied"
+          schema:
+            $ref: "#/definitions/EmptyCart"
+          examples:
+            application/json:
+              message: "Cart has been emptied"
+
+  /cart/place-order:
+    post:
+      tags:
+        - Cart
+      summary: "Place an order with the products in the customer's cart"
+      description: "Endpoint to place an order with the products in the customer's cart"
+      security:
+        - bearerAuth:
+      responses:
+        200:
+          description: "Order placed successfully"
+          schema:
+            $ref: "#/definitions/PlaceOrder"
+          examples:
+            application/json:
+              message: "Order placed successfully"
+              order_date: "Tue, 10 Sep 2024 00:00:00 GMT"
+              order_id: 13
+
+#===================Definitions===========#
+
+definitions:
   LoginPayload:
-    type: "object" #sending a JSON object
+    type: "object"
     properties: 
       email:
         type: "string"
-        description: "email"
+        description: "Email"
       password:
         type: "string"
-        description: "password"
+        description: "Password"
     required:
-    - "email"
-    - "password"
+      - email
+      - password
   
   LoginResponse:
     type: "object"
@@ -157,45 +278,42 @@ definitions:
         description: "Authentication token on successful login"
       message: 
         type: "string"
-        description: "Message indicating success of failure"
+        description: "Message indicating success or failure"
       status: 
-        type: "status"
+        type: "string"
         description: "Status of operation"
     required:
-    - "message"
-    - "status"
+      - message
+      - status
 
   GetCustomers:
     type: "object"
     properties:
       name:
         type: "string"
-        description: "Customer name"
+        description: "Customer's name"
       phone:
         type: "string"
-        description: "Customer phone"
+        description: "Customer's phone"
       email:
         type: "string"
-        description: "Customer email"
-      password:
-        type: "string"
-        description: "Customer password"
+        description: "Customer's email"
       username:
         type: "string"
-        description: "Customer username"
+        description: "Customer's username"
       admin:
-        type: "string"
-        description: "admin permissions"
+        type: "integer"
+        description: "Admin permissions. 1:Yes, 0: No"
 
   CreateCustomer:
     type: "object"
     properties:
       name:
         type: "string"
-        description: "Customer name"
+        description: "Customer's name"
       phone:
         type: "string"
-        description: "Customer phone"
+        description: "Customer's phone"
       email:
         type: "string"
         description: "Customer email"
@@ -206,49 +324,104 @@ definitions:
         type: "string"
         description: "Customer username"
       admin:
-        type: "string"
-        description: "admin permissions"
+        type: "integer"
+        description: "Admin permissions"
+    required:
+      - name
+      - phone
+      - email
+      - password
+      - username
+      - admin
+
 
   GetProducts:
     type: "object"
     properties:
       id:
         type: "integer"
-        description: "product id"
+        description: "Product ID"
       price:
-        type: "float"
-        description: "price of the product"
+        type: "number"
+        format: "float"
+        description: "Price of the product"
       product_name:
         type: "string"
-        description: "name of the product"
+        description: "Name of the product"
 
   CreateProduct:
     type: "object"
     properties:
       id:
         type: "integer"
-        description: "product id"
+        description: "Product ID"
       price:
-        type: "float"
-        description: "price of the product"
+        type: "number"
+        format: "float"
+        description: "Price of the product"
       product_name:
         type: "string"
-        description: "name of the product"
+        description: "Name of the product"
 
   GetOrder:
     type: "object"
     properties:
       customer_id:
         type: "integer"
-        description: "product id"
+        description: "ID of the customer"
       id:
-        type: "float"
-        description: "price of the product"
+        type: "integer"
+        description: "Order ID"
       order_date:
         type: "string"
-        description: "name of the product"
+        description: "Order date"
       products:
+        type: "array"
+        items:
+          $ref: "#/definitions/GetProducts"
+
+  AddToCart:
+    type: "object"
+    properties:
+      message:
         type: "string"
-        description: "name of the product"
-    
+        description: "Response message indicating success"
+
+  RemoveItemFromCart:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+        description: "Response message indicating item removal"
+
+  ViewCart:
+    type: "object"
+    properties:
+      customer_id:
+        type: "integer"
+        description: "ID of the customer"
+      products:
+        type: "array"
+        items:
+          $ref: "#/definitions/GetProducts"
+
+  EmptyCart:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+        description: "Response message indicating cart emptying"
+
+  PlaceOrder:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+        description: "Response message indicating order placement"
+      order_date:
+        type: "string"
+        description: "The date the order was placed"
+      order_id:
+        type: "integer"
+        description: "The ID of the placed order"
 
