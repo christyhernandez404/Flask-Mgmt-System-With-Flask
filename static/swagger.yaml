@@ -54,7 +54,7 @@ paths:
         200:
           description: "Successfully retrieved all customers"
           schema:
-            $ref: "#/definitions/GetCustomers"
+            $ref: "#/definitions/GetCustomersResponse"
           examples:
             application/json:
               name: "Christy"
@@ -74,12 +74,12 @@ paths:
           description: "Customer object"
           required: true
           schema:
-            $ref: "#/definitions/CreateCustomer"
+            $ref: "#/definitions/CreateCustomerPayload"
       responses:
         200:
           description: "Customer created successfully"
           schema:
-            $ref: "#/definitions/CreateCustomer"
+            $ref: "#/definitions/CreateCustomerResponse"
           examples:
             application/json:
               name: "Christy"
@@ -99,7 +99,7 @@ paths:
         200:
           description: "Successfully retrieved all products"
           schema:
-            $ref: "#/definitions/GetProducts"
+            $ref: "#/definitions/GetProductsResponse"
           examples:
             application/json:
               id: 1
@@ -123,7 +123,7 @@ paths:
         200:
           description: "Product created successfully"
           schema:
-            $ref: "#/definitions/CreateProduct"
+            $ref: "#/definitions/CreateProductResponse"
           examples:
             application/json:
               id: 1
@@ -174,7 +174,7 @@ paths:
         200:
           description: "Products added to cart"
           schema:
-            $ref: "#/definitions/AddToCart"
+            $ref: "#/definitions/AddToCartResponse"
           examples:
             application/json:
               message: "Products added to cart"
@@ -190,7 +190,7 @@ paths:
         200:
           description: "Product removed from cart"
           schema:
-            $ref: "#/definitions/RemoveItemFromCart"
+            $ref: "#/definitions/RemoveItemFromCartResponse"
           examples:
             application/json:
               message: "Product removed from cart"
@@ -206,7 +206,7 @@ paths:
         200:
           description: "Cart contents retrieved"
           schema:
-            $ref: "#/definitions/ViewCart"
+            $ref: "#/definitions/ViewCartResponse"
           examples:
             application/json:
               customer_id: 2
@@ -230,7 +230,7 @@ paths:
         200:
           description: "Cart has been emptied"
           schema:
-            $ref: "#/definitions/EmptyCart"
+            $ref: "#/definitions/EmptyCartResponse"
           examples:
             application/json:
               message: "Cart has been emptied"
@@ -247,7 +247,7 @@ paths:
         200:
           description: "Order placed successfully"
           schema:
-            $ref: "#/definitions/PlaceOrder"
+            $ref: "#/definitions/PlaceOrderResponse"
           examples:
             application/json:
               message: "Order placed successfully"
@@ -286,46 +286,46 @@ definitions:
       - message
       - status
 
-  GetCustomers:
+  GetCustomersResponse:
     type: "object"
     properties:
       name:
         type: "string"
-        description: "Customer's name"
+        example: "Hiro Celsius"
       phone:
         type: "string"
-        description: "Customer's phone"
+        example: "555-555-5555"
       email:
         type: "string"
-        description: "Customer's email"
+        example: "hiro@gmail.com"
       username:
         type: "string"
-        description: "Customer's username"
+        example: "hiroc"
       admin:
         type: "integer"
-        description: "Admin permissions. 1:Yes, 0: No"
+        example: "0"
 
-  CreateCustomer:
+  CreateCustomerPayload:
     type: "object"
     properties:
       name:
         type: "string"
-        description: "Customer's name"
+        example: "Christy Hernandez"
       phone:
         type: "string"
-        description: "Customer's phone"
+        example: "111-111-1111"
       email:
         type: "string"
-        description: "Customer email"
+        example: "christy@yahoo.com"
       password:
         type: "string"
-        description: "Customer password"
+        example: "13579"
       username:
         type: "string"
-        description: "Customer username"
+        example: "christyh"
       admin:
         type: "integer"
-        description: "Admin permissions"
+        example: "1"
     required:
       - name
       - phone
@@ -334,8 +334,30 @@ definitions:
       - username
       - admin
 
+  CreateCustomerResponse:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        example: "Hiro Celsius"
+      phone:
+        type: "string"
+        example: "555-555-5555"
+      email:
+        type: "string"
+        example: "hiro@gmail.com"
+      password:
+        type: "string"
+        example: "pythonrocks"
+      username:
+        type: "string"
+        description: "hiroc"
+      admin:
+        type: "integer"
+        description: "0"
 
-  GetProducts:
+
+  GetProductsReponse:
     type: "object"
     properties:
       id:
@@ -349,52 +371,105 @@ definitions:
         type: "string"
         description: "Name of the product"
 
-  CreateProduct:
+  CreateProductPayload:
     type: "object"
     properties:
-      id:
-        type: "integer"
-        description: "Product ID"
       price:
         type: "number"
         format: "float"
         description: "Price of the product"
       product_name:
         type: "string"
-        description: "Name of the product"
+        example: "iPhone 14 Pro"
+    required:
+      - price
+      - product_name
+  
 
-  GetOrder:
+  CreateProductResponse:
     type: "object"
     properties:
-      customer_id:
+      id:
         type: "integer"
-        description: "ID of the customer"
+        example: "3"
+      price:
+        type: "number"
+        format: "float"
+        example: "950"
+      product_name:
+        type: "string"
+        example: "iPhone 14 Pro"
+
+  GetOrderResponse:
+    type: "object"
+    properties:
       id:
         type: "integer"
         description: "Order ID"
+      customer_id:
+        type: "integer"
+        description: "ID of the customer"
       order_date:
-        type: "string"
-        description: "Order date"
+        type: "date"
+        description: "Date and time when the order was placed"
       products:
         type: "array"
+        description: "List of products in the order"
         items:
-          $ref: "#/definitions/GetProducts"
+          type: "object"
+          properties:
+            id:
+              type: "integer"
+              description: "Product ID"
+            product_name:
+              type: "string"
+              description: "Name of the product"
+            price:
+              type: "float"
+              description: "Product price"
 
-  AddToCart:
+  AddToCartPayload:
+    type: "object"
+    properties:
+      customer_id:
+        type: "integer"
+        example: "1"
+      product_ids:
+        type: "list"
+        example: "[1, 2, 3]"
+    required:
+      - customer_id
+      - product_ids
+
+  AddToCartResponse:
     type: "object"
     properties:
       message:
         type: "string"
-        description: "Response message indicating success"
+        description: "products added to cart"
 
-  RemoveItemFromCart:
+  RemoveItemFromCartPayload:
+    type: "object"
+    properties:
+      customer_id:
+        type: "integer"
+        example: "1"
+      product_ids:
+        type: "list"
+        example: "[1, 2, 3]"
+    required:
+      - customer_id
+      - product_ids
+
+
+  RemoveItemFromCartResponse:
     type: "object"
     properties:
       message:
         type: "string"
-        description: "Response message indicating item removal"
+        description: "Product removed from cart"
 
-  ViewCart:
+  ViewCartResponse:
     type: "object"
     properties:
       customer_id:
@@ -403,25 +478,36 @@ definitions:
       products:
         type: "array"
         items:
-          $ref: "#/definitions/GetProducts"
+          type: "object"
+          properties:
+            id:
+              type: "integer"
+              description: "Product ID"
+            price:
+              type: "number"
+              format: "float"
+              description: "Product price"
+            product_name:
+              type: "string"
+              description: "Name of the product"
 
-  EmptyCart:
+  EmptyCartReponse:
     type: "object"
     properties:
       message:
         type: "string"
-        description: "Response message indicating cart emptying"
+        example: "cart has been emptied"
 
-  PlaceOrder:
+  PlaceOrderResponse:
     type: "object"
     properties:
       message:
         type: "string"
-        description: "Response message indicating order placement"
+        example: "Order placed succesfully"
       order_date:
-        type: "string"
-        description: "The date the order was placed"
+        type: "date"
+        example: "Tue, 10 Sep 2024 00:00:00 GMT"
       order_id:
         type: "integer"
-        description: "The ID of the placed order"
+        example: "13"
 
