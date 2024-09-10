@@ -1,0 +1,254 @@
+swagger: '2.0'
+info:
+  title: "Ecommerce API"
+  description: "Brief description"
+  version: "1.0.0"
+host: "127.0.0.1:5000" #working on local host
+schemes:
+  - "http"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+securityDefinitions:
+  bearerAuth: 
+    type: apiKey
+    name: Authorization
+    in: header
+
+
+#Routes
+paths: #actual endpoints we are using
+  /customers/login: #the url endpoint
+    post: 
+      tags:
+        - Customer #creates a category for this route that can be reused on like routes
+      summary: "Login endpoint (generates a token)"
+      description: "Endpoint for user authentication and token generation"
+      parameters: 
+        - in: "body"
+          name: "body"
+          description: "credentials for login(email and password)"
+          required: true
+          schema:
+            $ref: "#/definitions/LoginPayload"
+      responses:
+        200:
+          description: "Login Successful"
+          schema:
+            $ref: "#definitions/LoginResponse"
+          examples:
+            application/json:
+              token: "adafiphwefanip3dkfapdif"
+              message: "succesfully logged in"
+              status: "success"
+
+  /customers:
+    get:
+      tags:
+        - Customer
+      summary: "retrieve a list of customer objects"
+      description: "endpoing to retrieve all customers, requires token authentication"
+      security:
+        - bearerAuth: 
+      responses:
+        200:
+          description: "Successfully retreived all customers"
+          schema:
+            $ref: "#/definitions/GetCustomers"
+          examples:
+            application/json:
+              name: "Christy"
+              email: "christy@gmail.com"
+              phone: "98754431"
+              username: "ChristyH"
+              admin: 0
+  /product:
+    get:
+      tags:
+        - Product
+      summary: "retrieve a list of product objects"
+      description: "endpoing to retrieve all products"
+      security:
+        - bearerAuth: 
+      responses:
+        200:
+          description: "Successfully retreived all products"
+          schema:
+            $ref: "#/definitions/GetProducts"
+          examples:
+            application/json:
+              id: 1
+              price: 89.99
+              product_name: "Cat Tower"
+  /product:
+    post:
+      tags:
+        - Product
+      summary: "create a product object in our ecommerce system"
+      description: "endpoint to create a product object"
+      security:
+        - bearerAuth: 
+      responses:
+        200:
+          description: "The products created will be shown"
+          schema:
+            $ref: "#/definitions/CreateProducts"
+          examples:
+            application/json:
+              id: 1
+              price: 89.99
+              product_name: "Cat Tower"
+  /orders:
+    get:
+      tags:
+        - Order
+      summary: "Retrieve a list of all orders"
+      description: "endpoint to view all orders"
+      security:
+        - bearerAuth:
+      responses:
+        200:
+          description: "A list of orders with products"
+          schema:
+                $ref: '#/components/schemas/OrdersResponse'
+          examples:
+            application/json:
+              customer_id: 2,
+              id: 5,
+              order_date: "2024-09-02",
+              products: [
+            {
+                id: 1,
+                price: 89.99,
+                product_name: "Cat Tower"
+            },
+            {
+                id: 2,
+                price: 75.0,
+                product_name: "Tall Lamp - 48in"
+            }
+        ]
+
+
+              
+
+#Payloads and Responses
+definitions: 
+#Login Definitions
+  LoginPayload:
+    type: "object" #sending a JSON object
+    properties: 
+      email:
+        type: "string"
+        description: "email"
+      password:
+        type: "string"
+        description: "password"
+    required:
+    - "email"
+    - "password"
+  
+  LoginResponse:
+    type: "object"
+    properties:
+      token:
+        type: "string"
+        description: "Authentication token on successful login"
+      message: 
+        type: "string"
+        description: "Message indicating success of failure"
+      status: 
+        type: "status"
+        description: "Status of operation"
+    required:
+    - "message"
+    - "status"
+
+  GetCustomers:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "Customer name"
+      phone:
+        type: "string"
+        description: "Customer phone"
+      email:
+        type: "string"
+        description: "Customer email"
+      password:
+        type: "string"
+        description: "Customer password"
+      username:
+        type: "string"
+        description: "Customer username"
+      admin:
+        type: "string"
+        description: "admin permissions"
+
+  CreateCustomer:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "Customer name"
+      phone:
+        type: "string"
+        description: "Customer phone"
+      email:
+        type: "string"
+        description: "Customer email"
+      password:
+        type: "string"
+        description: "Customer password"
+      username:
+        type: "string"
+        description: "Customer username"
+      admin:
+        type: "string"
+        description: "admin permissions"
+
+  GetProducts:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        description: "product id"
+      price:
+        type: "float"
+        description: "price of the product"
+      product_name:
+        type: "string"
+        description: "name of the product"
+
+  CreateProduct:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        description: "product id"
+      price:
+        type: "float"
+        description: "price of the product"
+      product_name:
+        type: "string"
+        description: "name of the product"
+
+  GetOrder:
+    type: "object"
+    properties:
+      customer_id:
+        type: "integer"
+        description: "product id"
+      id:
+        type: "float"
+        description: "price of the product"
+      order_date:
+        type: "string"
+        description: "name of the product"
+      products:
+        type: "string"
+        description: "name of the product"
+    
+
