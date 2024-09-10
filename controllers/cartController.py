@@ -41,19 +41,14 @@ def remove_item_from_cart(token_id):
 @user_validation
 def view_cart(token_id):
     try:
-        page =  request.args.get("page")
-        per_page = request.args.get("per_page")
-        page = 1 if not page else page
-        per_page = 10 if not per_page else per_page
-        all_cart_items = cartService.view_cart(token_id, page, per_page)
-    
-    except ValueError:
-        return jsonify({"error": "Invalid page or per_page parameter"}), 400
+        all_cart_items = cartService.view_cart(token_id)
+        print(f"Items returned from service: {all_cart_items}")  # Add this line
+
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-    return many_cart_schema.jsonify(all_cart_items), 200
+    return jsonify(all_cart_items), 200  # Return directly without schema
 
 @user_validation
 def empty_cart(token_id):

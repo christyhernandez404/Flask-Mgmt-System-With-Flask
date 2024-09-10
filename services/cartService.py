@@ -4,7 +4,6 @@ from models.customer import Customer
 from models.order import Order
 from models.order_product import order_products
 from models.cart import customer_cart
-from models.order_product import order_products
 from sqlalchemy import select 
 from datetime import date
 
@@ -46,10 +45,27 @@ def remove_item_from_cart(customer_id, cart_data):
         customer.cart.remove(product)
         db.session.commit()
 
-def view_cart(customer_id, page, per_page):
-    query = select(customer_cart).where(customer_cart.c.customer_id == customer_id)
-    all_cart_items = db.paginate(query, page=int(page), per_page=int(per_page))
-    return all_cart_items
+def view_cart(customer_id):
+    query = (
+        select(Product.id, Product.product_name, Product.price)
+        .select_from(customer_cart.join(Product, customer_cart.c.product_id == Product.id))
+        .where(customer_cart.c.customer_id == customer_id)
+    )
+
+    all_cart_items = db.session.execute(query).fetchall()
+    print(f"Query result: {all_cart_items}")  
+
+
+    cart_items = []
+    for row in all_cart_items:
+        item = {
+            "id": row.id,
+            "name": row.product_name,
+            "price": row.price
+        }
+        cart_items.append(item)
+    return cart_items
+
 
 def empty_cart(customer_id):
     customer = get_customer(customer_id)
