@@ -33,17 +33,17 @@ def add_items_to_cart(customer_id, cart_data):
     db.session.commit()
 
 def remove_item_from_cart(customer_id, cart_data):
+    print("start of cart service")
     customer = get_customer(customer_id)
-    product_id = cart_data['product_id']
+    print("customer", customer)
+    product_ids = cart_data['product_ids']
 
-    customer = get_customer(customer_id)
-    product = db.session.query(Product).get(product_id)
+    products = db.session.query(Product).filter(Product.id.in_(product_ids)).all()
 
-    if not product:
-        raise ValueError("product not found")
-    if product in customer.cart:
-        customer.cart.remove(product)
-        db.session.commit()
+    for product in products:
+        if product in customer.cart:
+            customer.cart.remove(product)
+    db.session.commit()
 
 def view_cart(customer_id):
     query = (

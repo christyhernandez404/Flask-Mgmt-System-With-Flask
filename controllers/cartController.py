@@ -25,12 +25,15 @@ def add_items_to_cart(token_id):
 @user_validation
 def remove_item_from_cart(token_id):
     try:
-        cart_data = single_cart_schema.load(request.json)
+        cart_data = request.json
         print(cart_data)
-    
+        if 'product_ids' not in cart_data:
+            return jsonify({"error": "product_ids is required and cant be empty"}), 400
+        cart_data = single_cart_schema.load(cart_data)
+        print("after the single cart schema", cart_data)
     except ValidationError as e:
         return jsonify(e.messages), 400 
-    
+     
     try:
         cartService.remove_item_from_cart(token_id, cart_data)
         return jsonify({"message": "Product removed from cart"}), 200
